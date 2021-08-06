@@ -1,4 +1,3 @@
-export * from "./welcome/welcome-screen"
-export * from "./demo/demo-screen"
-export * from "./demo/demo-list-screen"
+export * from "./Astroid/astroid-detail-screen"
+export * from "./Astroid/astroid-form-screen"
 // export other screens here

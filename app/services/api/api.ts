@@ -2,6 +2,7 @@ import { ApisauceInstance, create, ApiResponse } from "apisauce"
 import { getGeneralApiProblem } from "./api-problem"
 import { ApiConfig, DEFAULT_API_CONFIG } from "./api-config"
 import * as Types from "./api.types"
+import { NASA_API_KEY } from "../../utils/constants"
 
 /**
  * Manages all requests to the API.
@@ -45,11 +46,12 @@ export class Api {
   }
 
   /**
-   * Gets a list of users.
+   * Gets a list of Astroids.
    */
-  async getUsers(): Promise<Types.GetUsersResult> {
+  async getAstroidList() {
+    const url = `https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=${NASA_API_KEY}`
     // make the api call
-    const response: ApiResponse<any> = await this.apisauce.get(`/users`)
+    const response: ApiResponse<any> = await this.apisauce.get(url)
 
     // the typical ways to die when calling an api
     if (!response.ok) {
@@ -57,30 +59,23 @@ export class Api {
       if (problem) return problem
     }
 
-    const convertUser = (raw) => {
-      return {
-        id: raw.id,
-        name: raw.name,
-      }
-    }
-
     // transform the data into the format we are expecting
     try {
-      const rawUsers = response.data
-      const resultUsers: Types.User[] = rawUsers.map(convertUser)
-      return { kind: "ok", users: resultUsers }
+      return { kind: "ok", astrioidList: response.data }
     } catch {
-      return { kind: "bad-data" }
+      return { kind: "bad-data"}
     }
   }
 
   /**
-   * Gets a single user by ID
+   * Gets a single astroid by ID
    */
 
-  async getUser(id: string): Promise<Types.GetUserResult> {
-    // make the api call
-    const response: ApiResponse<any> = await this.apisauce.get(`/users/${id}`)
+   async getAstroidById(astroidId: number){
+   
+    const url = `https://api.nasa.gov/neo/rest/v1/neo/${astroidId}?api_key=DXkrb5Kye4BVoBjHgPwgeaWcuZAbwhX4SMRcnYuH`
+    // // make the api call
+    const response: ApiResponse<any> = await this.apisauce.get(url)
 
     // the typical ways to die when calling an api
     if (!response.ok) {
@@ -90,13 +85,10 @@ export class Api {
 
     // transform the data into the format we are expecting
     try {
-      const resultUser: Types.User = {
-        id: response.data.id,
-        name: response.data.name,
-      }
-      return { kind: "ok", user: resultUser }
+      return Promise.resolve({ kind: "ok", astrioid: response.data })
     } catch {
-      return { kind: "bad-data" }
+      return Promise.reject({ kind: "bad-data"})
     }
   }
+
 }
